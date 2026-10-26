@@ -17,7 +17,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:#8fd0ff;font-family:"A
 #tempWarn.over{animation:blink .4s steps(2) infinite}@keyframes blink{50%{opacity:.2}}
 #stat{position:absolute;left:calc(12px + env(safe-area-inset-left));top:calc(108px + env(safe-area-inset-top));font-size:12px;line-height:1.6}
 #parts{color:#ffd23c}
-#evlog{position:absolute;right:calc(12px + env(safe-area-inset-right));top:62px;font-size:10px;pointer-events:none;line-height:1.35;max-width:40vw;opacity:.95;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 6px;text-shadow:none;word-break:break-word}#evlog:empty{display:none}#evlog div{margin:1px 0}
+#evlog{position:absolute;right:calc(12px + env(safe-area-inset-right));top:calc(62px + env(safe-area-inset-top));font-size:10px;pointer-events:none;line-height:1.35;max-width:40vw;opacity:.95;background:rgba(0,0,0,.45);border-radius:6px;padding:3px 6px;text-shadow:none;word-break:break-word}#evlog:empty{display:none}#evlog div{margin:1px 0}
 #evlog .tree{color:#9fe36a}#evlog .heat{color:#ff8a4a}#evlog .harv{color:#ffd23c}
 #topBtns{position:absolute;right:calc(10px + env(safe-area-inset-right));top:calc(10px + env(safe-area-inset-top));pointer-events:auto;display:flex;gap:8px}
 button{font:inherit;font-size:13px;color:#000;background:#ffd23c;border:3px solid #000;border-radius:8px;padding:7px 10px;box-shadow:3px 3px 0 #000;cursor:pointer}

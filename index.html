@@ -2,10 +2,15 @@
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="mobile-web-app-capable" content="yes"><link rel="icon" href="data:,">
 <title>Sine Rally - Physics Lab</title>
 <link rel="stylesheet" href="host/style.css">
 <script type="importmap">{ "imports": { "three": "./lib/three.module.js" } }</script>
+<meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="SR Physics">
+<meta name="theme-color" content="#e8453c"><meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<style>/* iOS home-screen */canvas{touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}#allBuilds{display:inline-block;text-decoration:none;font:900 12px "Arial Black",system-ui,sans-serif;color:#111;background:#fff;border:3px solid #111;border-radius:6px;padding:5px 9px;box-shadow:3px 3px 0 #111;-webkit-tap-highlight-color:transparent}</style>
 </head><body>
 <canvas id="c"></canvas>
 <div id="labels"></div>
@@ -23,7 +28,7 @@
 </div>
 <div id="menu" class="hidden">
   <div class="mpanel">
-    <div class="tabs"><button data-tab="car" class="on">CAR</button><button data-tab="parts">PARTS</button><button data-tab="lab">LAB</button><button id="bDrive" class="go">DRIVE &#9654;</button></div>
+    <div class="tabs"><button data-tab="car" class="on">CAR</button><button data-tab="parts">PARTS</button><button data-tab="lab">LAB</button><button id="bDrive" class="go">DRIVE &#9654;</button><a id="allBuilds" href="https://leck-games.github.io/">‹ ALL BUILDS</a></div>
     <div class="tab" id="tab-car"></div>
     <div class="tab hidden" id="tab-parts"><div id="picker"></div><div class="row"><button id="bUnload">UNLOAD LOGS</button></div></div>
     <div class="tab hidden" id="tab-lab">
