@@ -133,9 +133,10 @@ function popText(x, y, z, txt, col = '#ff5030') { _v.set(x, y, z).project(camera
   requestAnimationFrame(() => { d.style.transform = 'translate(-50%,-260%)'; d.style.opacity = '0'; }); setTimeout(() => d.remove(), 1000); }
 // event reactions
 bus.on('tree:damage', d => { recent.set(d.id, 3); shake[d.id] = 0.6; treesDirty = true; const y = world.heightAt(d.x, d.z);
-  burst(d.x, y + 1.5, d.z, d.cause === 'harvest' ? 2 : 10, 0xc89a5a, d.cause === 'harvest' ? 3 : 7, 0.6);
+  if (d.cause === 'harvest') return; // melt: no chips, no shake
+  burst(d.x, y + 1.5, d.z, 10, 0xc89a5a, 7, 0.6);
   if (d.cause !== 'harvest') popText(d.x, y + 6, d.z, '-' + d.hp.toFixed(1) + ' HP'); });
-bus.on('tree:destroyed', d => { const y = world.heightAt(d.x, d.z); burst(d.x, y + 2, d.z, 22, 0x7a4e2a, 12, 1.2, 1.6); burst(d.x, y + 4, d.z, 18, 0x3f9a3a, 10, 1.4, 1.4); popText(d.x, y + 7, d.z, d.cause === 'harvest' ? 'FELLED!' : 'SMASH!', '#ffd23c'); treesDirty = true; });
+bus.on('tree:destroyed', d => { if (d.cause === 'harvest') { delete shake[d.id]; treesDirty = true; return; } /* harvester melt: vanish instantly, no animation */ const y = world.heightAt(d.x, d.z); burst(d.x, y + 2, d.z, 22, 0x7a4e2a, 12, 1.2, 1.6); burst(d.x, y + 4, d.z, 18, 0x3f9a3a, 10, 1.4, 1.4); popText(d.x, y + 7, d.z, d.cause === 'harvest' ? 'FELLED!' : 'SMASH!', '#ffd23c'); treesDirty = true; });
 bus.on('harvester:log', d => { const s = rig.state; popText(s.p.x, s.p.y + 3, s.p.z, '+' + d.logs + ' LOG', '#ffd23c'); });
 bus.on('engine:hot', d => burst(d.position[0], d.position[1] + 0.5, d.position[2], 1 + Math.round(d.intensity * 3), 0x888888, 1.5, 0.8, 1.4, 0.05));
 bus.on('engine:overheat', d => { burst(d.position[0], d.position[1] + 0.5, d.position[2], 8, 0x555555, 3, 0.9, 1.6, 0.05); });
@@ -184,6 +185,8 @@ document.querySelectorAll('.tabs [data-tab]').forEach(b => b.onclick = () => sho
 $('bDrive').onclick = closeMenu; $('bMenu').onclick = () => openMenu(); $('bReset').onclick = () => resetCar();
 $('bUnload').onclick = () => rig.unload(); $('bRepair').onclick = () => PH.repair(rig.state); $('bRegrow').onclick = () => { rig.state.treeHp = {}; world.regrow(); };
 let infN2O = false; $('bInfN2O').onclick = () => { infN2O = !infN2O; $('bInfN2O').textContent = 'INFINITE N2O: ' + (infN2O ? 'ON' : 'OFF'); };
+const setHandling = m => { rig.setMode(m); store.set('srp_handling', m); $('bMode').textContent = m === 'normal' ? 'NRM' : 'ARC'; $('bHandling').textContent = 'HANDLING: ' + (m === 'normal' ? 'NORMAL' : 'ARCADE'); };
+$('bMode').onclick = $('bHandling').onclick = () => setHandling(rig.state.mode === 'normal' ? 'arcade' : 'normal');
 $('bStab').onclick = () => { const a = rig.state.assist; a.stab = !a.stab; $('bStab').textContent = 'STABILITY: ' + (a.stab ? 'ON' : 'OFF'); };
 const TP = { strip: [0, -200, 0], practice: [-2.5, 50, 0], forest: [28, 150, Math.PI / 2] };
 document.querySelectorAll('[data-tp]').forEach(b => b.onclick = () => { teleport(...TP[b.dataset.tp]); closeMenu(); });
@@ -221,12 +224,12 @@ function render(dt = 1 / 30) { syncVisuals(dt); updateParts(dt); renderer.render
 // ---------- test hooks ----------
 const LAB = window.LAB = {
   PH, rig, world, bus, events: LOGGED, errors, get state() { return rig.state; }, input: null,
-  setVehicle: (id, a) => useVehicle(id, a), setAttachments, teleport, openMenu, closeMenu, showTab, vehicles: listVehicles().map(v => v.id),
+  setVehicle: (id, a) => useVehicle(id, a), setHandling, setAttachments, teleport, openMenu, closeMenu, showTab, vehicles: listVehicles().map(v => v.id),
   // synchronous sim (no rendering) then one render: for deterministic headless screenshots
   sim(secs, fn) { for (let i = 0, n = Math.round(secs / DT); i < n; i++) { const s = rig.state; simStep(fn ? fn(s) : readInput(DT)); if (LAB.until && LAB.until(s)) { LAB.until = null; break; } } acc = 0; camSnap = true; render(1 / 30); render(0); return PH.telemetry(rig.state); },
   pilot(lane = 0, o = {}) { return s => { const yaw = PH.yawOf(s); const st = Math.max(-1, Math.min(1, -((s.p.x - lane) * 0.08 + Math.sin(yaw) * 1.5 + s.w.y * 0.25))); return { gas: 1, brake: 0, steer: st, hand: 0, boost: 0, ...o }; }; },
   kmh: () => Math.hypot(rig.state.v.x, rig.state.v.z) * 3.6, render: () => render(0), get frames() { return frames; }, ready: false,
 };
-useVehicle(QS.get('car') || store.get('srp_vehicle', DEFAULT_VEHICLE));
+useVehicle(QS.get('car') || store.get('srp_vehicle', DEFAULT_VEHICLE)); setHandling(QS.get('mode') || store.get('srp_handling', 'arcade'));
 updateTerrain(0, 0); render(0); requestAnimationFrame(frame); LAB.ready = true;
 if (QS.has('menu')) openMenu(QS.get('menu') || 'car');

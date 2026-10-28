@@ -11,3 +11,8 @@ This repo is a standalone copy, and nothing here touches the main game repo. Cop
 7. **Tuning knobs.** `TREE` (curve), `HEAT`, `DEFAULTS.damageK` and per-vehicle `physics` blocks are all plain data.
 
 Compatibility: the default buggy params match the old handling (same tyre model, suspension and gearbox constants). Physics units are SI: metres, seconds and kg, with g = 12.5 m/s² as in the game.
+
+## Update: harvester melt, -10% top speed, ARCADE handling
+- **Harvester** now melts trees at any speed (`mode:'melt'`, all HP in one contact, no bounce, no speed loss, no car damage, 1 log per HP up to capacity). The game should skip chip/smash FX for `cause:'harvest'` (vanish instantly, show only `+N LOG`) and use `melts(rig.attach)` from `attachments/index.js` to melt its own collidable scenery (rocks).
+- **Top-speed governor:** attachment `mods.topMul` (the harvester has 0.9) caps speed at `topMul × topRef(P, mode, nitro)`, using the measured `vtop`, `arcade.vtop` and `vtopBoost` in each vehicle def. The harvester's 25 km/h limit is gone.
+- **Handling modes:** `s.mode` defaults to `'arcade'`. `rig.setMode('arcade'|'normal')` switches at runtime and survives `setVehicle`. Persist the choice in the host (the lab uses `srp_handling`). New events: `drift:start`, `drift:end`.

@@ -19,7 +19,7 @@
   <div id="tempBox"><div id="gauge"><div id="needle"></div><div id="gaugeHub"></div></div><div id="tempTxt">70&deg;C</div><div id="tempWarn"></div></div>
   <div id="stat"><div>CAR <b id="carName">BUGGY</b></div><div>DMG <span class="bar dmg" id="dmgBar"><i></i></span> <b id="dmgTxt">0%</b></div><div>LOGS <b id="logs">0/0</b> &middot; <b id="mass">1500</b> kg</div><div id="parts"></div></div>
   <div id="evlog"></div>
-  <div id="topBtns"><button id="bMenu">MENU</button><button id="bReset">RESET</button></div>
+  <div id="topBtns"><button id="bMenu">MENU</button><button id="bReset">RESET</button><button id="bMode" title="handling: ARCADE / NORMAL">ARC</button></div>
   <div id="help">WASD/arrows drive &middot; SHIFT nitro &middot; SPACE drift &middot; gas+brake standing = rev (heat) &middot; R reset &middot; M menu</div>
 </div>
 <div id="touch">
@@ -35,7 +35,8 @@
       <div class="row"><span class="alab">GO TO</span><button data-tp="strip">SPEED STRIP (gates z=700)</button><button data-tp="practice">PRACTICE ROW</button><button data-tp="forest">FOREST (harvest)</button></div>
       <div class="row"><span class="alab">FIX</span><button id="bRepair">REPAIR + COOL</button><button id="bRegrow">REGROW TREES</button></div>
       <div class="row"><span class="alab">CHEAT</span><button id="bInfN2O">INFINITE N2O: OFF</button><button id="bStab">STABILITY: ON</button></div>
-      <p class="note">Tree HP: 3. &ge;300 km/h smashes through (SINE GT + N2O on the strip). &le;200 km/h: damage scales with speed &times; angle. Harvester: crawl (&lt;25 km/h) into a tree.</p>
+      <div class="row"><span class="alab">FEEL</span><button id="bHandling">HANDLING: ARCADE</button></div>
+      <p class="note">Tree HP: 3. &ge;300 km/h smashes through (SINE GT + N2O on the strip). &le;200 km/h: damage scales with speed &times; angle. Harvester: melts any tree in its path at any speed (1 log per HP, logs capped), -10% top speed.</p>
     </div>
   </div>
 </div>

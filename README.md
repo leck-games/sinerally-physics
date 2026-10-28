@@ -22,11 +22,17 @@ Pick **SINE GT**, use LAB → *Speed strip* and hold GAS + N2O down the strip. I
 Stand still and hold GAS + BRAKE. The engine free-revs on the limiter. `engine:hot` starts at 105 °C (smoke puffs), `engine:overheat` comes at 118 °C (power ×0.65, no N2O), and the engine cuts at 140 °C. Long N2O runs also heat the engine.
 
 ### Harvesting
-Pick **TIMBERWOLF** (harvester + log rack by default) and creep into a tree below 25 km/h. The saw removes 1.2 HP/s and each HP gives one log in the rack. Logs add weight (60 kg each).
+Mount the **harvester** (TIMBERWOLF has it plus a log rack by default) and drive into trees at any speed. Each tree you touch melts instantly (all HP at once, no bounce, no speed loss, no damage) and gives one log per HP until the rack is full. Logs add weight (60 kg each). The harvester costs 10% top speed.
+
+### Handling: ARCADE / NORMAL
+ARCADE (default) is NFS-Carbon / Trackmania style: high grip, yaw assist, handbrake or brake-and-steer drifts that hold their angle, keep speed and fill N2O, strong anti-roll and stable landings. NORMAL is the original model. Toggle with the **ARC/NRM** button (top right) or LAB → FEEL. The setting is saved.
 
 ## Tests
 ```
-node tests/unit.mjs      # headless physics: curve table, 300 km/h pass-through, survivors, harvester, bull bar, heat events, all vehicles
+node tests/unit.mjs      # headless physics (ARCADE): curve table, 300 km/h pass-through, survivors, harvester melt at 10/150 km/h,
+                         # top speed with/without harvester per vehicle, bull bar, heat, slalom no-rollover, drift hold, landings
+MODE=normal node tests/unit.mjs   # same suite on the NORMAL model
+node tests/topspeed.mjs  # prints measured flat top speeds (for vtop in the defs)
 node tests/browser.mjs   # puppeteer-core + Chrome (CHROME=/path): UI, selector, picker, persistence, scenes, screenshots -> shots/, no console errors
 ```
-Screenshots are in `shots/`: 01 car selector, 02 attachments, 03 tree hit with HP, 04 temp gauge, 05 harvester, 06 300 km/h pass-through.
+Screenshots are in `shots/`: 01 car selector, 02 attachments, 03 tree hit with HP, 04 temp gauge, 05 harvester, 05c harvester at 120 km/h, 05d arcade drift, 06 300 km/h pass-through.

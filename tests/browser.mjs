@@ -53,6 +53,29 @@ console.log('  harvest', JSON.stringify(hv));
 ok(hv.logs === 3 && hv.felled && hv.felled.cause === 'harvest' && hv.dmg === 0, 'harvester felled tree, 3 logs, no damage');
 await shot('05b-harvester-felled');
 
+// 5c harvester at speed: buggy + harvester at ~120 km/h through the practice row, tree vanishes, no speed loss
+await page.evaluate(() => { LAB.world.regrow && LAB.world.regrow(); LAB.state.treeHp = {}; LAB.setVehicle('buggy', ['harvester']); LAB.teleport(-2.5, -60, 0); LAB.n0 = LAB.events.length;
+  LAB.until = s => s.p.z > 86; const p = LAB.pilot(-2.5); LAB.sim(30, s => ({ ...p(s), gas: LAB.kmh() < 120 ? 1 : 0 })); LAB.v0 = LAB.kmh(); LAB.until = s => s.p.z > 100; LAB.sim(5, s => ({ ...p(s), gas: LAB.kmh() < 120 ? 1 : 0 })); });
+const fast = await page.evaluate(() => ({ ev: LAB.events.slice(LAB.n0).find(e => e.type === 'tree:destroyed'), v0: LAB.v0, v1: LAB.kmh(), dmg: LAB.state.damage, hit: LAB.events.slice(LAB.n0).some(e => e.type === 'tree:hit') }));
+console.log('  fast harvest', JSON.stringify(fast));
+await shot('05c-harvester-120kmh');
+ok(fast.ev && fast.ev.cause === 'harvest' && !fast.hit && fast.dmg === 0 && fast.v1 > fast.v0 * 0.97, 'harvester melts a tree at 120 km/h, no hit, no damage, no speed loss');
+
+// 5d handling toggle: HUD button flips ARCADE <-> NORMAL, persisted
+await page.evaluate(() => localStorage.removeItem('srp_handling')); await page.reload({ waitUntil: 'load' }); await page.waitForFunction('window.LAB && LAB.ready');
+ok(await page.evaluate(() => LAB.state.mode === 'arcade' && document.getElementById('bMode').textContent === 'ARC'), 'ARCADE is the default (HUD shows ARC)');
+await page.click('#bMode');
+ok(await page.evaluate(() => LAB.state.mode === 'normal' && document.getElementById('bMode').textContent === 'NRM' && JSON.parse(localStorage.getItem('srp_handling')) === 'normal'), 'HUD button switches to NORMAL + persisted');
+await page.reload({ waitUntil: 'load' }); await page.waitForFunction('window.LAB && LAB.ready');
+ok(await page.evaluate(() => LAB.state.mode === 'normal'), 'NORMAL restored after reload');
+await page.evaluate(() => { LAB.setVehicle('quad', []); }); ok(await page.evaluate(() => LAB.state.mode === 'normal'), 'mode kept across vehicle change');
+await page.click('#bMode'); ok(await page.evaluate(() => LAB.state.mode === 'arcade'), 'and back to ARCADE');
+// arcade drift screenshot
+await page.evaluate(() => { LAB.setVehicle('buggy', []); LAB.teleport(-9, -200, 0); LAB.sim(6, s => ({ ...LAB.pilot(-9)(s), gas: LAB.kmh() < 100 ? 1 : 0 })); let t = 0;
+  LAB.sim(1.4, s => { t += 1 / 120; return { gas: 1, steer: t < 0.15 ? 1 : 0.6, hand: t < 0.3 ? 1 : 0 }; }); });
+const dr = await page.evaluate(() => ({ drift: !!LAB.state.drift, ev: LAB.events.filter(e => e.type === 'drift:start').length }));
+await shot('05d-arcade-drift'); ok(dr.drift && dr.ev > 0, 'arcade handbrake drift engaged (drift:start)');
+
 // 6 300 km/h pass-through
 await page.evaluate(() => { LAB.setVehicle('hyper', []); LAB.teleport(0, 0, 0); const n0 = LAB.events.length; LAB.n0 = n0;
   LAB.until = s => s.p.z > 712; LAB.sim(30, LAB.pilot(0, { boost: 1 })); });
